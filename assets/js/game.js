@@ -1,12 +1,14 @@
 var playerName = window.prompt("And what shall we call the young warrior?");
-var playerHealth = 100;
+var playerHealth = 60;
 var playerAttack =10;
-var playerMoney = 10;
+var playerMoney = 5;
 
 var enemyNames = ["Roborto", "Amy-Android", "Automa-Tom"];
 var enemyHealth = 50;
 var enemyAttack = 12;
 let fightPrompt;
+let shopOptionPrompt;
+let store;
 
 console.log(enemyNames);
 console.log(enemyNames.length);
@@ -31,6 +33,7 @@ var fight = function(enemyName) {
                 //subtract money from playerMoney for skipping
                 playerMoney = playerMoney - 10; 
                 console.log("playerMoney", playerMoney);
+                window.prompt(playerName + " lost 10 dollars by choosing to skip this battle. " + playerName + " now has " + playerMoney + " remaining.");
                 break;
             }
         }
@@ -95,6 +98,16 @@ var startGame = function() {
 
             //pass the pickedEnemyName variable's value into the fight function, where it will assume the value of the enemyName parameter
             fight(pickedEnemyName);
+            // if we're not at the last enemy in the array
+            if (playerHealth > 0 && i < enemyNames.length - 1) {
+                //ask if player wnats to use the store before the next round 
+                var storeConfirm = window.confirm("This round is over. Would you like to visit the store before the next round?");
+                if(storeConfirm) { 
+                    shop();
+                } else {
+                    fight(pickedEnemyName);
+                }
+            }
         } else {
             console.log("Player is dead.");
             window.alert("You have lost your robot in battle! Game fucking Over!");
@@ -124,4 +137,52 @@ var endGame = function() {
     }
 };
 
-startGame();
+var shop = function() {
+// ask player what they'd like to do 
+var shopOptionPrompt = window.prompt(
+    "Would you like to REFILL your health, UPGRADE  your attack, or LEAVE the store? Please type 'REFILL', 'UPGRADE' or 'LEAVE' to make your choice."
+);
+// use switch to carry out the action 
+switch (shopOptionPrompt) {
+    case "REFILL": // new case 
+    case "refill":
+        if (playerMoney >= 7) {
+        window.alert("Refilling player's health by 20 for 7 dollars.");
+    
+        //increase health and decrease money
+        playerHealth = playerHealth + 20; 
+        playerMoney = playerMoney - 7;
+        window.alert(playername + " now has " + playerMoney + " dollars left.");
+        } else {
+            window.alert("You ain't got the scratch, big fella!");
+        }
+        break;
+    case "UPGRADE": // new case 
+    case "upgrade":
+        if(playerMoney >= 7) {
+        window.alert("Upgrading player's attack by 6 points for 7 dollars.");
+    
+        //increase attack and decrease money
+        playerAttack = playerAttack + 6;
+        playerMoney = playerMoney - 7;
+        window.alert(playerName + " now has " + playerMoney + " dollars left.");
+        } else {
+            window.alert("You ain't got the scratch, big fella!");
+        }
+        break;
+    case "LEAVE":
+    case "leave":
+        window.alert("Leaving the store.");
+
+        //do nothing, so function will end
+        break;
+    default:
+        window.alert("You must pick one of the three choices again. Please try agian.");
+
+        //call shop() again to force player to pick a valid option
+        shop();
+    break;
+};
+};
+
+startGame()
