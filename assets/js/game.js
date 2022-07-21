@@ -1,4 +1,6 @@
-//function t oset name 
+/* GAME FUNCTIONS */
+
+//function tO set name 
 var getPlayerName = function() { 
     var name = "";
     while(name === "" || name === null) { 
@@ -61,7 +63,7 @@ var enemyInfo = [
     }
 ];
 
-let fightPrompt;
+let promptFight;
 let shopOptionPrompt;
 let store;
 
@@ -69,55 +71,84 @@ console.log(enemyInfo);
 
 function endGame() {}
 
-var fight = function(enemy) {
-    var fightPrompt = window.prompt("Would you like to FIGHT or SKIP this battle? Type 'FIGHT' or 'SKIP' to choose.");
-    while(playerInfo.health > 0 && enemy.health > 0) {
+//ask player if they'd like to fight or skip using fightOrSkip function 
+var fightPrompt = window.prompt("Would you like to FIGHT or SKIP this battle? Type 'FIGHT' or 'SKIP' to choose.");
 
-        //if player chooses "skip", confirm and stop the loop
-        if(fightPrompt === "skip" || fightPrompt === "SKIP") {
-            //confirm player wants to skip
-            var confirmSkip = window.confirm("Are you sure you'd like to skip this battle?");
 
-            //if yes (true), then leave the fight
-            if (confirmSkip) {
-                window.alert(playerInfo.name + " has decided to skip this fight. Onward!");
-                //subtract money from playerInfo.money for skipping
-                playerInfo.money = Math.max(0, playerInfo.money - 10);
-                console.log("playerInfo.money", playerInfo.money);
-                window.prompt(playerInfo.name + " lost 10 dollars by choosing to skip this battle. " + playerInfo.name + " now has " + playerInfo.money + " remaining.");
-                break;
-            }
+
+var fightOrSkip = function() {
+
+ //validate prompt answer 
+    if(fightPrompt === "" || fightPrompt === null) {
+        window.alert("you need to provide a valid answer, bitch! Try again.");
+        return fightOrSkip(); 
+    }       
+     
+    // convert fightPrompt to all lowercase so we can check with less options 
+    fightPrompt = fightPrompt.toLowerCase();
+
+    if (fightPrompt === "skip") {
+        //confirm player wants to skip
+        var confirmSkip = window.confirm("Are you sure you'd like to skip this battle?");
+
+        //if yes (true), then leave the fight
+        if (confirmSkip) {
+            window.alert(playerInfo.name + " has decided to skip this fight. Onward!");
+            //subtract money from playerInfo.money for skipping, but do not allow negative integers
+                if (playerInfo.money < 10) { 
+                    window.alert("You ain't got the scratch, big fella!")
+                }
+
+            playerInfo.money = Math.max(0, playerInfo.money - 10);
+            console.log("playerInfo.money", playerInfo.money);
+            window.alert(playerInfo.name + " lost 10 dollars by choosing to skip this battle. " + playerInfo.name + " now has " + playerInfo.money + " remaining.");
+
+            shop();
+            // stop while() loop using break and enter next fight
+
+            //return true if player wants to leave 
+            return true;
         }
+    }
+    return false;
+};
+     
 
-        //generate random damage value based on player's attack power 
-        var damage = randomNumber(playerInfo.attack -3, playerInfo.attack);
 
-        enemy.health = Math.max(0, enemy.health - damage);
-        
-        console.log(
-            playerInfo.name + " attacked " + enemy.name + ". " + enemy.name + " now has " + enemy.health + " health remaining."
-        );
 
-        // check enemy's health
-        if (enemy.health <= 0) {
-            window.alert(enemy.name + " has died! ");
-
-            //award player money for winning 
-            playerInfo.money = playerInfo.money + 20;
-            console.log(playerInfo.money);
-            window.alert(playerInfo.name + " just collected the purse! " + playerInfo.name + " 's money is now " + playerInfo.money);
-
-            //leave while() loop since the enemy is dead
+var fight = function(enemy) {
+    
+    while(playerInfo.health > 0 && enemy.health > 0) {
+        // ask player if they'd like to fight or skip using fightOrSkip function
+        if (fightOrSkip()) {
+            //if true, leave fight by breaking loop
             break;
-        } else {
-            window.alert(enemy.name + " still has " + enemy.health + " health left.");
         }
 
         //generate random damage value based on an enemy's attack power 
         var damage = randomNumber(enemy.attack - 3, enemy.attack);
 
+        //remove enemy's health by subtracting the amount we set in the damage variable 
+        enemy.health = Math.max(0, enemy.health - damage);
+        console.log(playerInfo.name + " attacked " + enemy.name + " ." + enemy.name + " now has " + enemy.health + " health points remaining.");
+        window.alert(playerInfo.name + " attacked " + enemy.name + " ." + enemy.name + " now has " + enemy.health + " health points remaining.");
+
+        //check enemy's health 
+        if(enemy.health <= 0) {
+            window.alert(enemy.name + " has died!");
+
+            playerInfo.money = playerInfo.money + 20;
+
+            //leave while() loop since enemy is dead 
+            break;
+        } else {
+            window.alert(enemy.name + " still has " + enemy.health + " health points remaining.");
+        }
+
+        //remove player's helath by subtracting the amount we set in the damage variable 
         playerInfo.health = Math.max(0, playerInfo.health - damage);
-        console.log(enemy.name + " attacked " + playerInfo.name + ". " + playerInfo.name + " now has " + playerInfo.health + " health remaning.");
+        console.log(enemy.name + " attacked " + playerInfo.name + " ." + playerInfo.name + " now has " + playerInfo.health + " health remaning.");
+        window.alert(enemy.name + " attacked " + playerInfo.name + " .G" + playerInfo.name + " now has " + playerInfo.health + " health remaning.");
 
         //check player's health
         if (playerInfo.health <= 0) {
@@ -158,7 +189,7 @@ var startGame = function() {
                 if(storeConfirm) { 
                     shop();
                 } else {
-                    fight(pickedEnemyName);
+                    fight(pickedEnemyObj);
                 }
             }
         } else {
