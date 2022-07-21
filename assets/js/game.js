@@ -14,8 +14,8 @@ var getPlayerName = function() {
 var playerInfo = {
     name: getPlayerName(),
     health: 100,
-    attack: 10,
-    money: 5,
+    attack: 28,
+    money: 10,
     reset: function() { 
         this.health = 100;
         this.money = 10;
@@ -72,6 +72,7 @@ let promptFight;
 let shopOptionPrompt;
 let store;
 
+var highScore = localStorage.setItem("highScore", playerInfo.money);
 
 function endGame() {}
 
@@ -147,13 +148,14 @@ var fight = function(enemy) {
             if(enemy.health <= 0) {
                 window.alert(enemy.name + " has died!");
 
+                //award player money for winning
                 playerInfo.money = playerInfo.money + 20;
+                window.alert(playerInfo.name + " just picked up the purse! " + playerInfo.name + " now has " + playerInfo.money + " dollars!");
+                console.log(playerInfo.money);
 
                 //leave while() loop since enemy is dead 
                 break;
-            } else {
-                    window.alert(enemy.name + " still has " + enemy.health + " health points remaining.");
-                }
+            }
 
                 //player gets attacked first 
             } else {
@@ -169,11 +171,12 @@ var fight = function(enemy) {
                       window.alert(playerInfo.name + " has died!");
                       //leave while() loop since the player is dead
                       break;
-                    } else {
-                     window.alert(playerInfo.name + ' still has ' + playerInfo.health + " health left.");
                 }
+                    
+                
                     //switch turn order for the next round 
                     isPlayerTurn = !isPlayerTurn
+                
     }// end of while loop
 }; // end of fight function
 
@@ -218,19 +221,30 @@ var startGame = function() {
     endGame();
 };
 
-//function to terminate the game 
-var endGame = function() {
-    // if player is still alive, player wins!
-    if(playerInfo.health > 0) {
-        window.alert("Great job, you've survived the game! You now have a score of " + playerInfo.money + " .");
-    } else {
-    window.alert("The battle is concluded, your hero forsaken. All that remains now is to bury the dead.");
-    }
-    // ask the player if they'd like to play again
-    var playAgainConfirm = window.confirm("Longing for more?");
+// function to terminate the game 
+var endGame = function() { 
+    window.alert("The game has now ended. Let's see how you did!");
 
-    if(playAgainConfirm) {
-        //restart the game 
+    //check localStorage for high score, if it's not there, use 0 
+    var highScore = localStorage.getItem("highscore");
+    if (highScore === null) {
+        highScore = 0;
+    }
+
+    // if player has more money than the high score, player has the new high score!
+    if (playerInfo.money > highScore) {
+        localStorage.setItem("highscore", playerInfo.money);
+        localStorage.setItem("name", playerInfo.name);
+
+        alert(playerInfo.name + " now has the high score of " + playerInfo.money + "!");
+    } else { 
+        alert(playerInfo.name + " did not beat the high score of " + highScore + ". Better luck next time!");
+    }
+
+    // ask player if they'd like to play again
+    var playAgainConfirm = window.confirm("Care to step back into the ring?");
+
+    if (playAgainConfirm) {
         startGame();
     } else {
         window.alert("Thanks for playing! Many happy returns!");
