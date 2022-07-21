@@ -1,5 +1,16 @@
+//function t oset name 
+var getPlayerName = function() { 
+    var name = "";
+    while(name === "" || name === null) { 
+        name = prompt("What is your robot's name?");
+    }
+    console.log(name);
+    return name;
+};
+
+
 var playerInfo = {
-    name: window.prompt("And what shall the young warrior be called?"),
+    name: getPlayerName(),
     health: 100,
     attack: 10,
     money: 5,
